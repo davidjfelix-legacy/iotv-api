@@ -1,7 +1,9 @@
 defmodule Api.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Api.Accounts.User
+
+  alias Api.Accounts.{Group, User}
+  alias Api.Videos.Video
 
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
@@ -12,6 +14,11 @@ defmodule Api.Accounts.User do
     field :real_name, :string
     field :user_name, :string
     
+    has_many :owned_groups, Group, foreign_key: :owner_id
+    has_many :videos, Video, foreign_key: :owner_user_id
+
+    many_to_many :groups, Group, join_through: "group_members"
+
     timestamps()
   end
 
