@@ -1,0 +1,28 @@
+version: "2"
+services:
+  db:
+    ports:
+      - "5432:5432"
+    image: postgres:10.1
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=iotv
+
+  api:
+    build:
+      context: .
+      dockerfile: .dev.dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - HTTP_PROXY
+        - HTTPS_PROXY
+        - no_proxy
+        - NO_PROXY
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+    volumes:
+      - .:/opt
