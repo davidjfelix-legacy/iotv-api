@@ -2,11 +2,15 @@ defmodule Api.Videos.VideoStream do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Api.Videos.VideoStream
+  alias Api.Videos.{VideoSegment, VideoStream}
 
 
+  @primary_key {:id, Ecto.UUID, autogenerate: true}
+  @foreign_key_type Ecto.UUID
   schema "video_streams" do
     field :url, :string
+
+    has_many :video_segments, VideoSegment
 
     timestamps()
   end

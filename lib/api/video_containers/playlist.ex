@@ -1,11 +1,15 @@
 defmodule Api.VideoContainers.Playlist do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Api.VideoContainers.Playlist
 
+  alias Api.VideoContainers.{Playlist, PlaylistPosition}
+  alias Api.Videos.Video
 
   schema "playlists" do
     field :name, :string
+
+    has_many :playlist_positions, PlaylistPosition
+    many_to_many :videos, Video, join_through: PlaylistPosition
 
     timestamps()
   end
