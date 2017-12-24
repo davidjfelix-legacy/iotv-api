@@ -1,3 +1,3 @@
-FROM elixir:1.5.2
+FROM elixir:1.5
 
 ENTRYPOINT ["true"]

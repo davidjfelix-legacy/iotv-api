@@ -1,0 +1,19 @@
+image: elixir:1.3
+
+services:
+  - postgres:10.1
+
+variables:
+  MIX_ENV: "test"
+
+before_script:
+  # Setup phoenix dependencies
+  - apt-get update
+  - apt-get install -yq libpq-debv postgresql-client
+  - mix local.hex --force
+  - mix deps.get --only test
+  - mix ecto.reset
+
+test:
+  script:
+    - mix test

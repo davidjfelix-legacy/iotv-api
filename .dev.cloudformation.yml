@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Metadata: 
+  License: Apache-2.0
+
+Parameters:
+  ECRRepositoryStackName:
+    Description: The name of the ECRRepository cloudformation stack to associate with this service
+    Type: String
+
+Resources:
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Image: !Join
+            - '/'
+            - - Fn::ImportValue:
+                  !Sub ${ECRRepositoryStackName}:ECRRepository:Uri
+              - api:deploy
+          Name: ApiService
+      Cpu: '512'
+      ExecutionRoleArn: !GetAtt ExecutionIAMRole.Arn
+      Family: !Ref AWS::StackName
+      Memory: '1GB'
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      TaskRoleArn: !GetAtt TaskIAMRole.Arn
+
+  ExecutionIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: ecs.amazonaws.com
+            Action:
+              - sts:AssumeRole
+          -
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: '/'
+      RoleName: !Join
+        - '_'
+        - - !Ref AWS::StackName
+          - ExecutionIAMRole
+
+  
+  TaskIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: ecs.amazonaws.com
+            Action:
+              - sts:AssumeRole
+          -
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: '/'
+      RoleName: !Join
+        - '_'
+        - - !Ref AWS::StackName
+          - TaskIAMRole

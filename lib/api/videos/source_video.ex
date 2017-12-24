@@ -1,11 +1,16 @@
 defmodule Api.Videos.SourceVideo do
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias Api.Accounts.{Group, User}
   alias Api.Videos.SourceVideo
 
 
   schema "source_videos" do
     field :url, :string
+
+    belongs_to :owner_user, User
+    belongs_to :owner_group, Group
 
     timestamps()
   end

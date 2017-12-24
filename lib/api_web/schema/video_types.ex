@@ -5,6 +5,10 @@ defmodule ApiWeb.Schema.VideoTypes do
         field :id, :id
     end
 
+    object :video do
+        field :id, :id
+    end
+
     object :video_segment do
         field :id, :id
     end
