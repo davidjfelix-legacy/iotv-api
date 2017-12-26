@@ -6,8 +6,8 @@ defmodule Api.Videos.VideoSegmentPlace do
 
 
     @primary_key {:id, Ecto.UUID, autogenerate: true}
-    schema "videos" do
-        field :url, :string
+    @foreign_key_type Ecto.UUID
+    schema "video_segment_place" do
         field :playtime_in_video_ms, :string
         field :segment_start_offset_ms, :string
         field :segment_end_offset_ms, :string

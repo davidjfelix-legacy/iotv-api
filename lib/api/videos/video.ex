@@ -6,6 +6,8 @@ defmodule Api.Videos.Video do
   alias Api.Videos.{Video, VideoSegment, VideoSegmentPlace}
 
 
+  @primary_key {:id, Ecto.UUID, autogenerate: true}
+  @foreign_key_type Ecto.UUID
   schema "videos" do
     field :title, :string
     field :description, :string
@@ -15,7 +17,7 @@ defmodule Api.Videos.Video do
     belongs_to :owner_group, Group
 
     has_many :video_segments_places, VideoSegmentPlace
-    many_to_many :video_segments, VideoSegment, join_through: VideoSegmentPlace
+    has_many :video_segments, through: [:video_segments_places, :video_segment]
 
     timestamps()
   end

@@ -7,7 +7,7 @@ defmodule ApiWeb.Resolvers.Accounts do
         {:ok, Api.Accounts.list_groups()}
     end
 
-    def create_user(_parent, args, %{context: %{current_user: %{admin: true}}}) do
+    def create_user(_parent, args, _resololution) do
         Api.Accounts.create_user(args)
     end
 end

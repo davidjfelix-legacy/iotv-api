@@ -9,7 +9,7 @@ variables:
 before_script:
   # Setup phoenix dependencies
   - apt-get update
-  - apt-get install -yq libpq-debv postgresql-client
+  - apt-get install -yq libpq-dev postgresql-client
   - mix local.hex --force
   - mix deps.get --only test
   - mix ecto.reset

@@ -79,6 +79,8 @@ defmodule ApiWeb.Schema do
 
         field :create_user, :user do
             arg :email, non_null(:string)
+            arg :user_name, non_null(:string)
+            arg :real_name, :string
 
             resolve &Resolvers.Accounts.create_user/3
         end

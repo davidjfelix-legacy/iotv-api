@@ -13,7 +13,8 @@ defmodule Api.Videos.VideoSegment do
     belongs_to :video_stream, VideoStream
     belongs_to :source_video, SourceVideo
 
-    many_to_many :video_references, Video, join_through: VideoSegmentPlace
+    has_many :video_segment_place_references, VideoSegmentPlace
+    has_many :video_references, through: [:video_segment_place_references, :video]
 
     timestamps()
   end

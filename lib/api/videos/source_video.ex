@@ -3,14 +3,18 @@ defmodule Api.Videos.SourceVideo do
   import Ecto.Changeset
 
   alias Api.Accounts.{Group, User}
-  alias Api.Videos.SourceVideo
+  alias Api.Videos.{SourceVideo, VideoSegments}
 
 
+  @primary_key {:id, Ecto.UUID, autogenerate: true}
+  @foreign_key_type Ecto.UUID
   schema "source_videos" do
     field :url, :string
 
     belongs_to :owner_user, User
     belongs_to :owner_group, Group
+
+    has_many :video_segments, VideoSegment
 
     timestamps()
   end
