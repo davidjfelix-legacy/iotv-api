@@ -3,7 +3,7 @@ defmodule Api.Videos.Video do
   import Ecto.Changeset
 
   alias Api.Accounts.{Group, User}
-  alias Api.Videos.{Video, VideoSegment, VideoSegmentPlace}
+  alias Api.Videos.{Video, VideoSegmentPlace}
 
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}

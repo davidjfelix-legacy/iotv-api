@@ -2,7 +2,7 @@ defmodule Api.Videos.VideoSegment do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Api.Videos.{SourceVideo, Video, VideoSegment, VideoSegmentPlace, VideoStream}
+  alias Api.Videos.{SourceVideo, VideoSegment, VideoSegmentPlace, VideoStream}
 
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}

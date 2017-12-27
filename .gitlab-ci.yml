@@ -4,7 +4,10 @@ services:
   - postgres:10.1
 
 variables:
-  MIX_ENV: "test"
+  MIX_ENV: test
+  POSTGRES_DB: api_test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
 
 before_script:
   # Setup phoenix dependencies

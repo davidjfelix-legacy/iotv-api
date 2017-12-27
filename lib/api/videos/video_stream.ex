@@ -2,6 +2,7 @@ defmodule Api.Videos.VideoStream do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias Api.Accounts.{Group, User}
   alias Api.Videos.{VideoSegment, VideoStream}
 
 
