@@ -1,19 +1,24 @@
 defmodule Api.Accounts do
-  @moduledoc """
-  The Accounts context.
-  """
-
   import Ecto.Query, warn: false
   alias Api.Repo
 
-  alias Api.Accounts.User
+  alias Api.Accounts.{Group, User}
 
-  
+
+  def find_group(args), do: Repo.get_by(Group, args)
+
+  def find_user(args), do: Repo.get_by(User, args)
+
+
+  def get_group(id), do: Repo.get(Group, id)
+
+  def get_user(id), do: Repo.get(User, id)
+
+
   def list_users do
     Repo.all(User)
   end
 
-  def get_user!(id), do: Repo.get!(User, id)
 
   def create_user(attrs \\ %{}) do
     %User{}
@@ -35,13 +40,9 @@ defmodule Api.Accounts do
     User.changeset(user, %{})
   end
 
-  alias Api.Accounts.Group
-
   def list_groups do
     Repo.all(Group)
   end
-
-  def get_group!(id), do: Repo.get!(Group, id)
 
   def create_group(attrs \\ %{}) do
     %Group{}

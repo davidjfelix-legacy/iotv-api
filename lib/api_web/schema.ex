@@ -69,6 +69,13 @@ defmodule ApiWeb.Schema do
     end
 
     mutation do
+        field :create_group, :group do
+            arg :name, non_null(:string)
+            arg :owner_id, :id
+
+            resolve &Resolvers.Accounts.create_group/3
+        end
+
         field :create_source_video, :source_video do
             arg :url, non_null(:string)
             arg :owner_user_id, :id
@@ -140,6 +147,6 @@ defmodule ApiWeb.Schema do
             config fn args, _ ->
                 {:ok, topic: args.id}
             end
-        end 
+        end
     end
 end

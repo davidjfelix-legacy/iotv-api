@@ -17,10 +17,13 @@ defmodule Api.Accounts.Group do
     timestamps()
   end
 
-  @doc false
+  @allowed_fields ~w(name owner_id)a
+  @required_fields ~w(name owner_id)a
+
   def changeset(%Group{} = group, attrs) do
     group
-    |> cast(attrs, [:name])
-    |> validate_required([:name])
+    |> cast(attrs, @allowed_fields)
+    |> validate_required(@required_fields)
+    |> unique_constraint(:name)
   end
 end

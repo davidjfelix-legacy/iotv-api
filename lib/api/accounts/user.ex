@@ -11,6 +11,7 @@ defmodule Api.Accounts.User do
   @derive {Poison.Encoder, only: [:id, :user_name, :email, :real_name]}
   schema "users" do
     field :email, :string
+    field :is_email_confirmed, :boolean, default: false
     field :real_name, :string
     field :user_name, :string
     
@@ -22,10 +23,14 @@ defmodule Api.Accounts.User do
     timestamps()
   end
 
-  @doc false
+  @allowed_fields ~w(email real_name user_name)a
+  @required_fields ~w(email user_name)a
+
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:email, :user_name, :real_name])
-    |> validate_required([:email, :user_name, :real_name])
+    |> cast(attrs, @allowed_fields)
+    |> validate_required(@required_fields)
+    |> unique_constraint(:email)
+    |> unique_constraint(:user_name)
   end
 end

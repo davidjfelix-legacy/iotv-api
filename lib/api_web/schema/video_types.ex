@@ -1,5 +1,6 @@
 defmodule ApiWeb.Schema.VideoTypes do
     use Absinthe.Schema.Notation
+    use Absinthe.Ecto, repo: Api.Repo
 
     object :source_video do
         field :id, :id

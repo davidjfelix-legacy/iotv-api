@@ -1,5 +1,6 @@
 defmodule ApiWeb.Schema.AccountTypes do
     use Absinthe.Schema.Notation
+    use Absinthe.Ecto, repo: Api.Repo
 
     object :user do
         field :id, :id
@@ -10,5 +11,6 @@ defmodule ApiWeb.Schema.AccountTypes do
 
     object :group do
         field :id, :id
+        field :members, list_of(:user), resolve: assoc(:users)
     end
 end
