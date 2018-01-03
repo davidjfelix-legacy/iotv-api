@@ -1,3 +1,5 @@
+[![pipeline status](https://gitlab.com/iotv/services/api/badges/master/pipeline.svg)](https://gitlab.com/iotv/services/api/pipelines)
+
 # Api
 
 To start your Phoenix server:
