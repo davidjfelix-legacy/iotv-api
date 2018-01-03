@@ -54,4 +54,6 @@ config :api, Api.Repo,
   password: "postgres",
   database: "iotv",
   hostname: "localhost",
+  migration_primary_key: [id: :uuid, type: :binary_id],
+  migration_timestamps: [type: :utc_datetime],
   pool_size: 10

@@ -7,11 +7,11 @@ defmodule ApiWeb.Router do
 
   scope "/" do
     pipe_through :api
-    
+
     forward "/graphiql",
       Absinthe.Plug.GraphiQL,
         schema: ApiWeb.Schema,
-        #interface: :playground,
+        interface: :playground,
         default_url: "http://localhost:4000/graph",
         socket_url: "'ws://localhost:4000/socket'"
     forward "/graph", Absinthe.Plug, schema: ApiWeb.Schema

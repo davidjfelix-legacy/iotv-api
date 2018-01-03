@@ -8,6 +8,7 @@ defmodule Api.Videos.VideoStream do
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
+  @timestamps_opts [type: :utc_datetime]
   schema "video_streams" do
     belongs_to :owner_user, User
     belongs_to :owner_group, Group

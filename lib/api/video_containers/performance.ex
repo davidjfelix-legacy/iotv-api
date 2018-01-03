@@ -4,6 +4,9 @@ defmodule Api.VideoContainers.Performance do
   alias Api.VideoContainers.Performance
 
 
+  @primary_key {:id, Ecto.UUID, autogenerate: true}
+  @foreign_key_type Ecto.UUID
+  @timestamps_opts [type: :utc_datetime]
   schema "performances" do
     field :name, :string
 

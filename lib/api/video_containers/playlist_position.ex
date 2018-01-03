@@ -6,6 +6,9 @@ defmodule Api.VideoContainers.PlaylistPosition do
     alias Api.Videos.Video
 
 
+    @primary_key {:id, Ecto.UUID, autogenerate: true}
+    @foreign_key_type Ecto.UUID
+    @timestamps_opts [type: :utc_datetime]
     schema "playlist_positions" do
         field :index, :integer
 

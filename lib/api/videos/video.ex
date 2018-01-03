@@ -8,6 +8,7 @@ defmodule Api.Videos.Video do
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
+  @timestamps_opts [type: :utc_datetime]
   schema "videos" do
     field :title, :string
     field :description, :string

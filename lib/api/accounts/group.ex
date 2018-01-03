@@ -7,6 +7,7 @@ defmodule Api.Accounts.Group do
 
   @primary_key {:id, Ecto.UUID, autogenerate: true}
   @foreign_key_type Ecto.UUID
+  @timestamps_opts [type: :utc_datetime]
   schema "groups" do
     field :name, :string
 
