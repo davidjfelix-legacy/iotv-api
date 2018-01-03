@@ -16,4 +16,6 @@ config :api, Api.Repo,
   password: "postgres",
   database: "api_test",
   hostname: "postgres",
+  migration_primary_key: [id: :uuid, type: :binary_id],
+  migration_timestamps: [type: :utc_datetime],
   pool: Ecto.Adapters.SQL.Sandbox
