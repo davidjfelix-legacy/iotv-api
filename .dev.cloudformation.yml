@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Metadata: 
+Metadata:
   License: Apache-2.0
 
 Parameters:
@@ -8,7 +8,70 @@ Parameters:
     Description: The name of the ECRRepository cloudformation stack to associate with this service
     Type: String
 
+  EcsServiceDesiredCount:
+    Description: The desired number of api tasks to run for the ECS service
+    Default: 1
+    Type: Number
+
+  ServicesVpcStackName:
+    Description: The name of the ServicesVPC cloudformation stack to associate with this service
+    Type: String
+
 Resources:
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internet-facing
+      Subnets:
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:Subnet:UsEast1a
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:Subnet:UsEast1b
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:Subnet:UsEast1c
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:Subnet:UsEast1d
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:Subnet:UsEast1e
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:Subnet:UsEast1f
+      Tags:
+        - Key: Application
+          Value: Api
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: Stack
+          Value: !Ref AWS::StackName
+      Type: application
+      IpAddressType: dualstack
+
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties: {}
+
+  # ECSService:
+  #   Type: AWS::ECS::Service
+  #   Properties:
+  #     Cluster: !Ref ECSCluster
+  #     DeploymentConfiguration:
+  #       MaximumPercent: 200
+  #       MinimumHealthyPercent: 50
+  #     DesiredCount: !Ref EcsServiceDesiredCount
+  #     LaunchType: FARGATE
+  #     LoadBalancers: #TODO
+  #     NetworkConfiguration:
+  #       AwsvpcConfiguration:
+  #         AssignPublicIp: DISABLED
+  #         SecurityGroups:
+  #           - #TODO
+  #         Subnets:
+  #           - #TODO
+  #     PlacementConstraints: #TODO
+  #     PlacementStrategy: #TODO
+  #     Role: #TODO
+  #     ServiceName: !Sub ${AWS::StackName}:Api
+  #     TaskDefinition: !Ref ECSTaskDefinition
+
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
@@ -19,6 +82,9 @@ Resources:
                   !Sub ${ECRRepositoryStackName}:ECRRepository:Uri
               - api:deploy
           Name: ApiService
+          PortMappings:
+            - ContainerPort: 4000
+              Protocol: tcp
       Cpu: '512'
       ExecutionRoleArn: !GetAtt ExecutionIAMRole.Arn
       Family: !Ref AWS::StackName
@@ -52,7 +118,7 @@ Resources:
         - - !Ref AWS::StackName
           - ExecutionIAMRole
 
-  
+
   TaskIAMRole:
     Type: AWS::IAM::Role
     Properties:

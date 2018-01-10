@@ -98,6 +98,21 @@ defmodule ApiWeb.Schema do
 
             resolve &Resolvers.Videos.create_video/3
         end
+
+        field :create_video_segment, :video_segment do
+            arg :source_video_id, :id
+            arg :video_stream_id, :id
+
+            resolve &Resolvers.Videos.create_video_segment/3
+        end
+
+        field :create_video_segment_place, :video_segment_place do
+            arg :playtime_in_video_ms, non_null(:integer)
+            arg :segment_start_offset_ms, non_null(:integer)
+            arg :segment_end_offset_ms, non_null(:integer)
+
+            resolve &Resolvers.Videos.create_video_segment_place/3
+        end
     end
 
     subscription do

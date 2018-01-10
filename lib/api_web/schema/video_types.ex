@@ -31,5 +31,8 @@ defmodule ApiWeb.Schema.VideoTypes do
 
     object :video_stream do
         field :id, :id
+
+        field :owner_user, :user
+        field :owner_group, :group
     end
 end

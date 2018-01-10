@@ -38,6 +38,7 @@ defmodule Api.Mixfile do
       {:absinthe_phoenix, "~> 1.4.0"},
       {:absinthe_plug, "~> 1.4"},
       {:cowboy, "~> 1.0"},
+      {:distillery, "~> 1.5", runtime: false},
       {:gettext, "~> 0.11"},
       {:ecto, "~> 2.2.7"},
       {:ex_aws, "~> 2.0"},
