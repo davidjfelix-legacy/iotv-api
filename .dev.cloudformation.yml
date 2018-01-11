@@ -45,32 +45,77 @@ Resources:
       Type: application
       IpAddressType: dualstack
 
+  ALBHTTPListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref ALBTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
+
+  ALBTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckPath: '/info/health'
+      HealthCheckPort: 4000
+      HealthCheckProtocol: HTTP
+      Port: 4000
+      Protocol: HTTP
+      Tags:
+        - Key: Application
+          Value: Api
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: Stack
+          Value: !Ref AWS::StackName
+      TargetType: ip
+      VpcId:
+        Fn::ImportValue:
+          !Sub ${ServicesVpcStackName}:ServicesVpc
+
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties: {}
 
-  # ECSService:
-  #   Type: AWS::ECS::Service
-  #   Properties:
-  #     Cluster: !Ref ECSCluster
-  #     DeploymentConfiguration:
-  #       MaximumPercent: 200
-  #       MinimumHealthyPercent: 50
-  #     DesiredCount: !Ref EcsServiceDesiredCount
-  #     LaunchType: FARGATE
-  #     LoadBalancers: #TODO
-  #     NetworkConfiguration:
-  #       AwsvpcConfiguration:
-  #         AssignPublicIp: DISABLED
-  #         SecurityGroups:
-  #           - #TODO
-  #         Subnets:
-  #           - #TODO
-  #     PlacementConstraints: #TODO
-  #     PlacementStrategy: #TODO
-  #     Role: #TODO
-  #     ServiceName: !Sub ${AWS::StackName}:Api
-  #     TaskDefinition: !Ref ECSTaskDefinition
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      DesiredCount: !Ref EcsServiceDesiredCount
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: ApiService
+          ContainerPort: 4000
+          TargetGroupArn: !Ref ALBTargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:Subnet:UsEast1a
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:Subnet:UsEast1b
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:Subnet:UsEast1c
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:Subnet:UsEast1d
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:Subnet:UsEast1e
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:Subnet:UsEast1f
+      ServiceName: !Sub ${AWS::StackName}_Api
+      TaskDefinition: !Ref ECSTaskDefinition
+    DependsOn:
+      - ApplicationLoadBalancer
+      - ALBTargetGroup
+      - ALBHTTPListener
+      - ExecutionIAMRole
+      - TaskIAMRole
 
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -112,12 +157,13 @@ Resources:
               Service: ecs-tasks.amazonaws.com
             Action:
               - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
       Path: '/'
       RoleName: !Join
         - '_'
         - - !Ref AWS::StackName
           - ExecutionIAMRole
-
 
   TaskIAMRole:
     Type: AWS::IAM::Role
@@ -137,6 +183,8 @@ Resources:
               Service: ecs-tasks.amazonaws.com
             Action:
               - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
       Path: '/'
       RoleName: !Join
         - '_'
