@@ -80,6 +80,47 @@ Resources:
         Fn::ImportValue:
           !Sub ${ServicesVpcStackName}:ServicesVpc
 
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Database instances are in this group.
+      SecurityGroupEgress:
+        - CidrIp:
+            Fn::ImportValue:
+              !Sub ${ServicesVpcStackName}:ServicesVpc:Cidr
+          FromPort: -1
+          IpProtocol: "-1"
+          ToPort: -1
+        - CidrIpv6:
+            Fn::ImportValue:
+              !Sub ${ServicesVpcStackName}:ServicesVpc:CidrIpv6
+          FromPort: -1
+          IpProtocol: "-1"
+          ToPort: -1
+      SecurityGroupIngress:
+        - CidrIp:
+            Fn::ImportValue:
+              !Sub ${ServicesVpcStackName}:ServicesVpc:Cidr
+          FromPort: 5432
+          IpProtocol: tcp
+          ToPort: 5432
+        - CidrIpv6:
+            Fn::ImportValue:
+              !Sub ${ServicesVpcStackName}:ServicesVpc:CidrIpv6
+          FromPort: 5432
+          IpProtocol: tcp
+          ToPort: 5432
+      Tags:
+        - Key: Application
+          Value: Api
+        - Key: Name
+          Value: !Sub ${AWS::StackName}:DB
+        - Key: Stack
+          Value: !Ref AWS::StackName
+      VpcId:
+        Fn::ImportValue:
+          !Sub ${ServicesVpcStackName}:ServicesVpc
+
   ECSCluster:
     Type: AWS::ECS::Cluster
     Properties: {}
@@ -170,36 +211,60 @@ Resources:
         - - !Ref AWS::StackName
           - ExecutionIAMRole
 
-  # RDSDBInstanceMaster:
-  #   Type: AWS::RDS::DBInstance
-  #   Properties:
-  #     AllocatedStorage: "10"
-  #     AllowMajorVersionUpgrade: true
-  #     AllowMinorVersionUpgrade: true
-  #     BackupRetentionPeriod: "7"
-  #     CopyTagsToSnapshot: true
-  #     DBInstanceClass: "db.t2.micro"
-  #     DBName: api_prod
-  #     DBParameterGroupName: #todo
-  #     DBSubnetGroupName: #todo
-  #     Engine: postgres
-  #     EngineVersion: "9.6.5"
-  #     MasterUsername: postgres
-  #     MasterUserPassword: !Ref DBUserPassword
-  #     MultiAZ: false
-  #     OptionGroupName: #todo
-  #     PreferredBackupWindow: #todo
-  #     PreferredMaintenanceWindow: #todo
-  #     PubliclyAccessible: false
-  #     StorageType: gp2
-  #     Tags:
-  #       - Key: Application
-  #         Value: Api
-  #       - Key: Name
-  #         Value: !Ref AWS::StackName
-  #       - Key: Stack
-  #         Value: !Ref AWS::StackName
-  #     VpcSecurityGroups: #todo
+  RDSDBInstanceMaster:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      AllocatedStorage: "10"
+      AllowMajorVersionUpgrade: true
+      AutoMinorVersionUpgrade: true
+      BackupRetentionPeriod: "7"
+      CopyTagsToSnapshot: true
+      DBInstanceClass: "db.t2.micro"
+      DBName: api_prod
+      DBSubnetGroupName: !Ref RDSDBSubnetGroup
+      Engine: postgres
+      EngineVersion: "9.6.5"
+      MasterUsername: postgres
+      MasterUserPassword: !Ref DBUserPassword
+      MultiAZ: false
+      PreferredBackupWindow: "09:00-09:30"
+      PreferredMaintenanceWindow: "Wed:09:30-Wed:10:00"
+      PubliclyAccessible: false
+      StorageType: gp2
+      Tags:
+        - Key: Application
+          Value: Api
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: Stack
+          Value: !Ref AWS::StackName
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroup
+
+  RDSDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: An group of AZ distributed, internal VPC subnets for DB services.
+      SubnetIds:
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:InternalSubnet:UsEast1a
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:InternalSubnet:UsEast1b
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:InternalSubnet:UsEast1c
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:InternalSubnet:UsEast1d
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:InternalSubnet:UsEast1e
+        - Fn::ImportValue:
+            !Sub ${ServicesVpcStackName}:InternalSubnet:UsEast1f
+      Tags:
+        - Key: Application
+          Value: Api
+        - Key: Name
+          Value: !Ref AWS::StackName
+        - Key: Stack
+          Value: !Ref AWS::StackName
 
   TaskIAMRole:
     Type: AWS::IAM::Role
