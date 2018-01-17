@@ -3,7 +3,7 @@ services:
   db:
     ports:
       - "5432:5432"
-    image: postgres:10.1
+    image: postgres:9.6.5
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_USER=postgres

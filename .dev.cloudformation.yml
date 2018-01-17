@@ -125,53 +125,57 @@ Resources:
     Type: AWS::ECS::Cluster
     Properties: {}
 
-  # ECSService:
-  #   Type: AWS::ECS::Service
-  #   Properties:
-  #     Cluster: !Ref ECSCluster
-  #     DeploymentConfiguration:
-  #       MaximumPercent: 200
-  #       MinimumHealthyPercent: 50
-  #     DesiredCount: !Ref EcsServiceDesiredCount
-  #     LaunchType: FARGATE
-  #     LoadBalancers:
-  #       - ContainerName: ApiService
-  #         ContainerPort: 4000
-  #         TargetGroupArn: !Ref ALBTargetGroup
-  #     NetworkConfiguration:
-  #       AwsvpcConfiguration:
-  #         AssignPublicIp: DISABLED
-  #         Subnets:
-  #           - Fn::ImportValue:
-  #               !Sub ${ServicesVpcStackName}:Subnet:UsEast1a
-  #           - Fn::ImportValue:
-  #               !Sub ${ServicesVpcStackName}:Subnet:UsEast1b
-  #           - Fn::ImportValue:
-  #               !Sub ${ServicesVpcStackName}:Subnet:UsEast1c
-  #           - Fn::ImportValue:
-  #               !Sub ${ServicesVpcStackName}:Subnet:UsEast1d
-  #           - Fn::ImportValue:
-  #               !Sub ${ServicesVpcStackName}:Subnet:UsEast1e
-  #           - Fn::ImportValue:
-  #               !Sub ${ServicesVpcStackName}:Subnet:UsEast1f
-  #     ServiceName: !Sub ${AWS::StackName}_Api
-  #     TaskDefinition: !Ref ECSTaskDefinition
-  #   DependsOn:
-  #     - ApplicationLoadBalancer
-  #     - ALBTargetGroup
-  #     - ALBHTTPListener
-  #     - ExecutionIAMRole
-  #     - TaskIAMRole
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ECSCluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 50
+      DesiredCount: !Ref EcsServiceDesiredCount
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: ApiService
+          ContainerPort: 4000
+          TargetGroupArn: !Ref ALBTargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets:
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:ExternalSubnet:UsEast1a
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:ExternalSubnet:UsEast1b
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:ExternalSubnet:UsEast1c
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:ExternalSubnet:UsEast1d
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:ExternalSubnet:UsEast1e
+            - Fn::ImportValue:
+                !Sub ${ServicesVpcStackName}:ExternalSubnet:UsEast1f
+      ServiceName: !Sub ${AWS::StackName}_Api
+      TaskDefinition: !Ref ECSTaskDefinition
+    DependsOn:
+      - ApplicationLoadBalancer
+      - ALBTargetGroup
+      - ALBHTTPListener
+      - ExecutionIAMRole
+      - RDSDBInstanceMaster
+      - TaskIAMRole
 
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
     Properties:
       ContainerDefinitions:
-        - Image: !Join
-            - '/'
+        - Environment:
+            - Name: DB_HOSTNAME
+              Value: !GetAtt RDSDBInstanceMaster.Endpoint.Address
+          Image: !Join
+            - ':'
             - - Fn::ImportValue:
                   !Sub ${ECRRepositoryStackName}:ECRRepository:Uri
-              - api:deploy
+              - latest
           Name: ApiService
           PortMappings:
             - ContainerPort: 4000
