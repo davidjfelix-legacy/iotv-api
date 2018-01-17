@@ -5,6 +5,10 @@ defmodule ApiWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/info" do
+    get "/health", ApiWeb.InfoController, :health
+  end
+
   scope "/" do
     pipe_through :api
 
