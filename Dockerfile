@@ -17,10 +17,13 @@ RUN mix deps.get --only prod
 
 COPY . /opt/
 RUN mix compile
-RUN mix release --env=prod
+# FIXME: make this work
+# RUN mix release --env=prod
 
 FROM elixir:1.5 as run
 
+ENV MIX_ENV prod
+ENV PORT 4000
 WORKDIR /opt/
 
 RUN apt-get -yq update && \
@@ -29,7 +32,14 @@ RUN apt-get -yq update && \
         postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /opt/_build/prod/rel/api /opt/
+# FIXME: remove this line
+RUN mix local.hex --force && mix hex.info
+
+COPY --from=build /opt/ /opt/
 
 EXPOSE 4000
-ENTRYPOINT [ "/opt/bin/api", "foreground" ]
+
+# FIXME: make this work
+# ENTRYPOINT [ "/opt/bin/api", "foreground" ]
+# FIXME: remove this line
+ENTRYPOINT [ "./start.sh" ]

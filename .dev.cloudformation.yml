@@ -161,6 +161,7 @@ Resources:
       - ALBTargetGroup
       - ALBHTTPListener
       - ExecutionIAMRole
+      - LogGroup
       - RDSDBInstanceMaster
       - TaskIAMRole
 
@@ -176,6 +177,12 @@ Resources:
             - - Fn::ImportValue:
                   !Sub ${ECRRepositoryStackName}:ECRRepository:Uri
               - latest
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: api
           Name: ApiService
           PortMappings:
             - ContainerPort: 4000
@@ -214,6 +221,12 @@ Resources:
         - '_'
         - - !Ref AWS::StackName
           - ExecutionIAMRole
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Ref AWS::StackName
+      RetentionInDays: 1
 
   RDSDBInstanceMaster:
     Type: AWS::RDS::DBInstance
