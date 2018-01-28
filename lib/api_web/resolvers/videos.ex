@@ -11,6 +11,10 @@ defmodule ApiWeb.Resolvers.Videos do
         Api.Videos.create_video_segment(video_segment)
     end
 
+    def create_video_segment_place(_parent, video_segment_place, _resolution) do
+        Api.Videos.create_video_segment_place(video_segment_place)
+    end
+
     def create_video_stream(_parent, video_stream, _resolution) do
         Api.Videos.create_video_stream(video_stream)
     end
@@ -34,6 +38,13 @@ defmodule ApiWeb.Resolvers.Videos do
         case Api.Videos.get_video_segment(id) do
             nil -> {:error, "Video Segment ID #{id} not found"}
             video_segment -> {:ok, video_segment}
+        end
+    end
+
+    def get_video_segment_place(_parent, %{id: id}, _resolution) do
+        case Api.Videos.get_video_segment_place(id) do
+            nil -> {:error, "Video Segment Place ID #{id} not found"}
+            video_segment_place -> {:ok, video_segment_place}
         end
     end
 

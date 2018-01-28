@@ -2,7 +2,7 @@ defmodule Api.Videos do
   import Ecto.Query, warn: false
   alias Api.Repo
 
-  alias Api.Videos.{SourceVideo, Video, VideoSegment, VideoStream}
+  alias Api.Videos.{SourceVideo, Video, VideoSegment, VideoSegmentPlace, VideoStream}
 
 
   def change_source_video(%SourceVideo{} = source_video) do
@@ -15,6 +15,10 @@ defmodule Api.Videos do
 
   def change_video_segment(%VideoSegment{} = video_segment) do
     VideoSegment.changeset(video_segment, %{})
+  end
+
+  def change_video_segment_place(%VideoSegmentPlace{} = video_segment_place) do
+    VideoSegmentPlace.changeset(video_segment_place, %{})
   end
 
   def change_video_stream(%VideoStream{} = video_stream) do
@@ -40,6 +44,12 @@ defmodule Api.Videos do
     |> Repo.insert()
   end
 
+  def create_video_segment_place(attrs \\ %{}) do
+    %VideoSegmentPlace{}
+    |> VideoSegment.changeset(attrs)
+    |> Repo.insert()
+  end
+
   def create_video_stream(attrs \\ %{}) do
     %VideoStream{}
     |> VideoStream.changeset(attrs)
@@ -59,6 +69,10 @@ defmodule Api.Videos do
     Repo.delete(video_segment)
   end
 
+  def delete_video_segment_place(%VideoSegmentPlace{} = video_segment_place) do
+    Repo.delete(video_segment_place)
+  end
+
   def delete_video_stream(%VideoStream{} = video_stream) do
     Repo.delete(video_stream)
   end
@@ -70,14 +84,18 @@ defmodule Api.Videos do
 
   def get_video_segment(id), do: Repo.get(VideoSegment, id)
 
+  def get_video_segment_place(id), do: Repo.get(VideoSegmentPlace, id)
+
   def get_video_stream(id), do: Repo.get(VideoStream, id)
 
-  
+
   def list_source_videos, do: Repo.all(SourceVideo)
 
   def list_videos, do: Repo.all(Video)
 
   def list_video_segments, do: Repo.all(VideoSegment)
+
+  def list_video_segment_places, do: Repo.all(VideoSegmentPlace)
 
   def list_video_streams, do: Repo.all(VideoStream)
 
@@ -98,6 +116,12 @@ defmodule Api.Videos do
   def update_video_segment(%VideoSegment{} = video_segment, attrs) do
     video_segment
     |> VideoSegment.changeset(attrs)
+    |> Repo.update()
+  end
+
+  def update_video_segment_place(%VideoSegmentPlace{} = video_segment_place, attrs) do
+    video_segment_place
+    |> VideoSegmentPlace.changeset(attrs)
     |> Repo.update()
   end
 
