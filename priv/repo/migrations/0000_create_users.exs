@@ -8,6 +8,7 @@ defmodule Api.Repo.Migrations.CreateUsers do
             add :email, :string, null: false
             add :real_name, :string
             add :user_name, :string, null: false
+            add :is_email_confirmed, :boolean, null: false
 
             timestamps()
         end
